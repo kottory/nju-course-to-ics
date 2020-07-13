@@ -2,7 +2,7 @@ import json
 import pytz
 import re
 from datetime import date, datetime, time, timedelta
-from njupass import NjuAuth
+from njupass import NjuUiaAuth
 from icalendar import Calendar, Event, vText
 
 TIME_START_CLASS = {
@@ -37,10 +37,12 @@ TIME_END_CLASS = {
 
 
 def getNjuClassesUrl(date=date.today()):
+    """url of classes information"""
     return 'https://wx.nju.edu.cn/njukb/wap/default/classes?date={}'.format(str(date))
 
 
 def getFirstDay(curDate, curWeek):
+    """get first day of the first week"""
     assert(curWeek >= 1)
     curDate -= timedelta(weeks=curWeek-1)
     curDate -= timedelta(weeks=curDate.weekday())
@@ -48,10 +50,12 @@ def getFirstDay(curDate, curWeek):
 
 
 def combineDateAndTime(d, t):
+    """combine date and time to datetime"""
     return datetime(d.year, d.month, d.day, t.hour, t.minute, t.second, tzinfo=pytz.timezone('Asia/Shanghai'))
 
 
 def parseCourse(course, curDate):
+    """parse course information from json to vEVENT of ics"""
     st = int(course['order'])
     ed = st + int(course['totalLength']) - 1
     event = Event()
@@ -70,7 +74,7 @@ def parseCourse(course, curDate):
 
 class CourseSearcher:
     def __init__(self, username, password):
-        self.auth = NjuAuth()
+        self.auth = NjuUiaAuth()
         self.auth.login(username, password)
 
     def createIcs(self, maxWeek=20):

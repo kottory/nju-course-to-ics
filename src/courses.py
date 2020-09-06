@@ -2,7 +2,7 @@ import json
 import pytz
 import re
 from datetime import date, datetime, time, timedelta
-from njupass import NjuUiaAuth
+from src.njupass import NjuUiaAuth
 from icalendar import Calendar, Event, vText
 
 TIME_START_CLASS = {
@@ -45,7 +45,7 @@ def getFirstDay(curDate, curWeek):
     """get first day of the first week"""
     assert(curWeek >= 1)
     curDate -= timedelta(weeks=curWeek-1)
-    curDate -= timedelta(weeks=curDate.weekday())
+    curDate -= timedelta(days=curDate.weekday())
     return curDate
 
 
@@ -79,11 +79,11 @@ class CourseSearcher:
 
     def createIcs(self, maxWeek=20):
         events = []
-        data = json.loads(self.auth.session.get(getNjuClassesUrl()).content)
+        data = json.loads(self.auth.session.get(getNjuClassesUrl(datetime(2020, 10, 1))).content)
 
         curWeek = int(re.search(r'第(\d{1,2})周',
                                 data['d']['dateInfo']['name']).group(1))
-        firstDay = getFirstDay(date.today(), curWeek)
+        firstDay = getFirstDay(datetime(2020, 10, 1), curWeek)
         mondays = [firstDay + timedelta(weeks=x) for x in range(maxWeek)]
 
         for monday in mondays:

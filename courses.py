@@ -2,7 +2,7 @@ import json
 import pytz
 import re
 from datetime import date, datetime, time, timedelta
-from src.njupass import NjuUiaAuth
+from u_cource_to_ics.njupass import NjuUiaAuth
 from icalendar import Calendar, Event, vText
 
 TIME_START_CLASS = {

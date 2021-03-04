@@ -97,7 +97,7 @@ class CourseSearcher:
                         events.append(parseCourse(course_list[0], classDate))
 
         cal = Calendar()
-        cal.add('prodid', 'NJU COURSE TO ICS by qqktr')
+        cal.add('prodid', 'NJU COURSE TO ICS by kottory')
         cal.add('version', '2.0')
         for event in events:
             cal.add_component(event)

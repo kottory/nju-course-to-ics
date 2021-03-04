@@ -129,4 +129,7 @@ dmypy.json
 .pyre/
 
 # generate icalendar file
-sample.ics
+example.ics
+
+# pycharm
+.idea/

@@ -53,7 +53,6 @@ def combineDateAndTime(d, t):
     """combine date and time to datetime"""
     return datetime(d.year, d.month, d.day, t.hour, t.minute, t.second, tzinfo=pytz.timezone('Asia/Shanghai'))
 
-
 def parseCourse(course, curDate):
     """parse course information from json to vEVENT of ics"""
     st = int(course['order'])
@@ -77,13 +76,13 @@ class CourseSearcher:
         self.auth = NjuUiaAuth()
         self.auth.login(username, password)
 
-    def createIcs(self, maxWeek=20):
+    def createIcs(self, maxWeek=20, curDate=date.today()):
         events = []
-        data = json.loads(self.auth.session.get(getNjuClassesUrl(datetime(2020, 10, 1))).content)
+        data = json.loads(self.auth.session.get(getNjuClassesUrl(curDate)).content)
 
         curWeek = int(re.search(r'第(\d{1,2})周',
                                 data['d']['dateInfo']['name']).group(1))
-        firstDay = getFirstDay(datetime(2020, 10, 1), curWeek)
+        firstDay = getFirstDay(curDate, curWeek)
         mondays = [firstDay + timedelta(weeks=x) for x in range(maxWeek)]
 
         for monday in mondays:

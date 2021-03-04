@@ -2,7 +2,7 @@ import json
 import pytz
 import re
 from datetime import date, datetime, time, timedelta
-from u_cource_to_ics.njupass import NjuUiaAuth
+from njupass import NjuUiaAuth
 from icalendar import Calendar, Event, vText
 
 TIME_START_CLASS = {
@@ -72,9 +72,8 @@ def parseCourse(course, curDate):
 
 
 class CourseSearcher:
-    def __init__(self, username, password):
-        self.auth = NjuUiaAuth()
-        self.auth.login(username, password)
+    def __init__(self, auth):
+        self.auth = auth
 
     def createIcs(self, maxWeek=20, curDate=date.today()):
         events = []

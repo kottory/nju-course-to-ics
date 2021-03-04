@@ -2,3 +2,4 @@ requests
 icalendar
 PyExecJS
 pytz
+Pillow

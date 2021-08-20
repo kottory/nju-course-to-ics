@@ -26,8 +26,6 @@ class NjuUiaAuth:
         r = self.session.get(URL_NJU_UIA_AUTH)
         self.lt = re.search(
             r'<input type="hidden" name="lt" value="(.*)"/>', r.text).group(1)
-        self.dllt = re.search(
-            r'<input type="hidden" name="dllt" value="(.*)"/>', r.text).group(1)
         self.execution = re.search(
             r'<input type="hidden" name="execution" value="(.*)"/>', r.text).group(1)
         self._eventId = re.search(
@@ -83,7 +81,7 @@ class NjuUiaAuth:
             'username': username,
             'password': self.parsePassword(password),
             'lt': self.lt,
-            'dllt': self.dllt,
+            'dllt': 'userNamePasswordLogin',
             'execution': self.execution,
             '_eventId': self._eventId,
             'rmShown': self.rmShown,
@@ -91,6 +89,8 @@ class NjuUiaAuth:
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit 537.36 (KHTML, like Gecko) Chrome"
         }
         r = self.session.post(URL_NJU_UIA_AUTH, data=data, allow_redirects=False)
+        print(data)
+        print(r.text)
         return r.status_code == 302
 
 

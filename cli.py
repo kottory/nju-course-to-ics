@@ -7,8 +7,8 @@ auth = njupass.NjuUiaAuth()
 
 while True:
     auth = njupass.NjuUiaAuth()
-    username = input("Please Input Your User Name(required): ")
-    password = getpass.getpass("Please Input Your Password(required): ")
+    username = input("Please Input Your User Name: ")
+    password = getpass.getpass("Please Input Your Password: ")
     captchaResponse = ''
 
     needCaptcha = auth.needCaptcha(username)

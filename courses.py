@@ -63,10 +63,10 @@ def parseCourse(course, curDate):
     event.add('dtstart', combineDateAndTime(curDate, TIME_START_CLASS[st]))
     event.add('dtend', combineDateAndTime(curDate, TIME_END_CLASS[ed]))
     event.add('dtstamp', datetime.today())
-    event['location'] = vText(course['location'])
-    event['uid'] = course['course_id']
+    event['location'] = vText("江苏省南京市南京大学{}".format(course['location']))
+    # event['uid'] = course['course_id']
     event['status'] = vText('CONFIRMED')
-    event['description'] = vText('教师: {}'.format(course['teacher']))
+    event['description'] = vText('教师: {}\n课程 ID: {}'.format(course['teacher'], course['course_id']))
     return event
 
 
@@ -91,11 +91,11 @@ class CourseSearcher:
             for x in range(1, 8):
                 classDate = monday + timedelta(x - 1)
                 for course_list in data['kclist'][str(x)].values():
-                    if course_list:
-                        events.append(parseCourse(course_list[0], classDate))
+                    for course in course_list:
+                        events.append(parseCourse(course, classDate))
 
         cal = Calendar()
-        cal.add('prodid', 'NJU COURSE TO ICS by kottory')
+        cal.add('prodid', '-//me.kottory//NJU COURSE TO ICS//EN')
         cal.add('version', '2.0')
         for event in events:
             cal.add_component(event)

@@ -5,7 +5,10 @@ PACKAGES:
     NjuUiaAuth
     NjuEliteAuth
 """
-import execjs
+from Crypto.Cipher import AES
+import random
+import base64
+import string
 import requests
 import re
 import os
@@ -23,6 +26,10 @@ class NjuUiaAuth:
 
     def __init__(self):
         self.session = requests.Session()
+        self.session.headers.update({
+           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:56.0) Gecko/20100101 Firefox/56.0'
+        })
+
         r = self.session.get(URL_NJU_UIA_AUTH)
         self.lt = re.search(
             r'<input type="hidden" name="lt" value="(.*)"/>', r.text).group(1)
@@ -46,7 +53,6 @@ class NjuUiaAuth:
         res = self.session.get(url, stream=True)
         return BytesIO(res.content)
 
-
     def parsePassword(self, password):
         """
         DESCRIPTION:
@@ -54,19 +60,27 @@ class NjuUiaAuth:
         ATTRIBUTES:
             password(str): Original password
         """
-        with open(os.path.join(os.path.dirname(__file__), 'resources/encrypt.js')) as f:
-            ctx = execjs.compile(f.read())
-        return ctx.call('encryptAES', password, self.pwdDefaultEncryptSalt)
+        random_iv = ''.join(random.sample((string.ascii_letters + string.digits) * 10, 16))
+        random_str = ''.join(random.sample((string.ascii_letters + string.digits) * 10, 64))
 
-    
+        data = random_str + password
+        key = self.pwdDefaultEncryptSalt.encode("utf-8")
+        iv = random_iv.encode("utf-8")
+
+        bs = AES.block_size
+        pad = lambda s: s + (bs - len(s) % bs) * chr(bs - len(s) % bs)
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        data = cipher.encrypt(pad(data).encode("utf-8"))
+        return base64.b64encode(data).decode("utf-8")
+
     def needCaptcha(self, username):
-        url = 'https://authserver.nju.edu.cn/authserver/needCaptcha.html?username={}'.format(username)
+        url = 'https://authserver.nju.edu.cn/authserver/needCaptcha.html?username={}'.format(
+            username)
         r = self.session.post(url)
         if 'true' in r.text:
             return True
         else:
             return False
-
 
     def login(self, username, password, captchaResponse=""):
         """
@@ -88,16 +102,15 @@ class NjuUiaAuth:
             'captchaResponse': captchaResponse,
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit 537.36 (KHTML, like Gecko) Chrome"
         }
-        r = self.session.post(URL_NJU_UIA_AUTH, data=data, allow_redirects=False)
-        print(data)
-        print(r.text)
+        r = self.session.post(URL_NJU_UIA_AUTH, data=data,
+                              allow_redirects=False)
         return r.status_code == 302
 
 
 class NjuEliteAuth:
     """
     DESCRIPTION:
-        Designed for passing Unified Identity Authentication(UIA) of Nanjing University.
+        Designed for passing previous JiaoWu of Nanjing University.
     """
 
     def __init__(self):

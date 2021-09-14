@@ -66,7 +66,7 @@ def parseCourse(course, curDate):
     event['location'] = vText("江苏省南京市南京大学{}".format(course['location']))
     # event['uid'] = course['course_id']
     event['status'] = vText('CONFIRMED')
-    event['description'] = vText('教师: {}\n课程 ID: {}'.format(course['teacher'], course['course_id']))
+    event['description'] = vText('教师: {}; 课程 ID: {}'.format(course['teacher'], course['course_id']))
     return event
 
 
